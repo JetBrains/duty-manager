@@ -1,0 +1,16 @@
+type Avatar {
+    url: String
+}
+
+type Profile {
+    avatar: Avatar
+}
+
+type User {
+    name: String!
+    profile: Profile
+}
+
+type Query {
+    me: User
+}

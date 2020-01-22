@@ -2,11 +2,11 @@ const {config, loaders} = require('@jetbrains/ring-ui/webpack.config')
 const withCSS = require('@zeit/next-css')
 require('dotenv').config()
 
-const {CLIENT_ID} = process.env
+const {SPACE_URL, SPACE_CLIENT_ID} = process.env
 
 module.exports = withCSS({
   cssModules: true,
-  env: {CLIENT_ID},
+  env: {SPACE_URL, SPACE_CLIENT_ID},
   webpack(baseConfig) {
     baseConfig.module.rules = baseConfig.module.rules.concat(
       config.module.rules.filter(rule => rule !== loaders.cssLoader),
@@ -26,7 +26,6 @@ module.exports = withCSS({
           }
         : external,
     )
-    baseConfig.externals.push('jsdom')
     return baseConfig
   },
   target: 'serverless',
