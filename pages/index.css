@@ -1,0 +1,9 @@
+@import '~@jetbrains/ring-ui/components/global/variables.css';
+
+body {
+    margin: 0;
+    font-size: var(--ring-font-size);
+    line-height: var(--ring-line-height);
+    color: var(--ring-text-color);
+    font-family: var(--ring-font-family);
+}
