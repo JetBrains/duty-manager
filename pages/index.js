@@ -1,4 +1,6 @@
 import Head from 'next/head'
+import {RelayEnvironmentProvider} from 'react-relay/hooks'
+import RelayEnvironment from '../utils/relay-environment'
 
 import '../utils/jsdom'
 import Header, {Tray} from '@jetbrains/ring-ui/components/header/header'
@@ -8,7 +10,7 @@ import './index.css'
 
 function App() {
   return (
-    <>
+    <RelayEnvironmentProvider environment={RelayEnvironment}>
       <Head>
         <title>Duty Manager</title>
       </Head>
@@ -18,7 +20,7 @@ function App() {
           <Profile />
         </Tray>
       </Header>
-    </>
+    </RelayEnvironmentProvider>
   )
 }
 

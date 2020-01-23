@@ -9,6 +9,7 @@ if (typeof window === 'undefined') {
 
     global[name] = window[name]
   }
+  window.isJSDOM = true
   jsdomWindow = window
 }
 

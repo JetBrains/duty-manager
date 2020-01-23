@@ -4,20 +4,31 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "yarn relay && next build",
+    "start": "next start",
+    "relay": "relay-compiler --schema schema.graphql --src ./ --exclude '**/api/**' '**/.next/**' '**/node_modules/**' '**/test/**' '**/__generated__/**' '**/schema/**'",
+    "relay-dev": "yarn relay --watch"
   },
   "dependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-proposal-pipeline-operator": "^7.8.3",
     "@jetbrains/ring-ui": "^2.1.16",
     "@zeit/next-css": "^1.0.1",
+    "axios": "^0.19.2",
+    "babel-plugin-relay": "^8.0.0",
+    "core-js": "^2.6.11",
     "dotenv": "^8.2.0",
     "express-graphql": "^0.9.0",
+    "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
     "graphql-import": "^0.7.1",
     "jsdom": "^16.0.0",
     "next": "9.2.0",
     "react": "16.12.0",
-    "react-dom": "16.12.0"
+    "react-dom": "16.12.0",
+    "react-relay": "^0.0.0-experimental-5f1cb628",
+    "relay-compiler": "^8.0.0",
+    "webpack": "^4.41.5"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",

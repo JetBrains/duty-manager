@@ -1,31 +1,34 @@
-import React, {useState} from 'react'
+import React, {Suspense} from 'react'
 import {Profile as RingProfile} from '@jetbrains/ring-ui/components/header/header'
-import LoginDialog from '@jetbrains/ring-ui/components/login-dialog/login-dialog'
+import {graphql, preloadQuery, usePreloadedQuery} from 'react-relay/hooks'
+
+import RelayEnvironment from '../utils/relay-environment'
 
 const GuestUser = {guest: true}
 
-const scope = 'ViewAbsences'
-const authUrl = `${process.env.SPACE_URL}/oauth/auth?response_type=token&redirect_uri=${location.origin}/authorized&client_id=${process.env.SPACE_CLIENT_ID}&scope=${scope}`
+const ProfileQuery = graphql`
+  query profileQuery {
+    me {
+      name
+      profile {
+        avatar {
+          url
+        }
+      }
+    }
+  }
+`
 
-const login = () =>
-  new Promise(resolve => {
-    const token = process.env.SPACE_TOKEN
-    document.cookie = `space_token=${token}`
-    resolve()
-    // const authWindow = window.open(authUrl)
-  })
+const preloadedQuery = preloadQuery(RelayEnvironment, ProfileQuery)
 
-export default function Profile() {
-  const [showLoginDialog, setShowLoginDialog] = useState(false)
+function Profile() {
+  return <RingProfile user={GuestUser} onLogin={authenticate} />
+}
 
+export default function ProfileContainer(props) {
   return (
-    <>
-      <RingProfile user={GuestUser} onLogin={login} />
-      <LoginDialog
-        show={showLoginDialog}
-        onCancel={() => setShowLoginDialog(false)}
-        url={authUrl}
-      />
-    </>
+    <Suspense fallback={<RingProfile loading />}>
+      <Profile {...props} />
+    </Suspense>
   )
 }
