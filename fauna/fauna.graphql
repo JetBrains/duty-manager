@@ -1,0 +1,216 @@
+directive @embedded on OBJECT
+directive @collection(name: String!) on OBJECT
+directive @index(name: String!) on FIELD_DEFINITION
+directive @resolver(
+  name: String
+  paginated: Boolean! = false
+) on FIELD_DEFINITION
+directive @relation(name: String) on FIELD_DEFINITION
+directive @unique(index: String) on FIELD_DEFINITION
+scalar Date
+
+type Duty {
+  # The document's ID.
+  _id: ID!
+  # The document's timestamp.
+  _ts: Long!
+  date: Date!
+  responsible: User
+}
+
+# 'Duty' input values
+input DutyInput {
+  date: Date!
+  responsible: DutyResponsibleRelation
+}
+
+# The pagination object for elements of type 'Duty'.
+type DutyPage {
+  # The elements of type 'Duty' in this page.
+  data: [Duty]!
+  # A cursor for elements coming after the current page.
+  after: String
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+# Allow manipulating the relationship between the types 'Duty' and 'User' using the field 'Duty.responsible'.
+input DutyResponsibleRelation {
+  # Create a document of type 'User' and associate it with the current document.
+  create: UserInput
+  # Connect a document of type 'User' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'User'
+  disconnect: Boolean
+}
+
+# The `Long` scalar type
+# represents non-fractional signed whole numeric values.
+# Long can represent values between -(2^63) and 2^63 - 1.
+scalar Long
+
+type Mutation {
+  # Update an existing document in the collection of 'User'
+  updateUser(
+    # The 'User' document's ID
+    id: ID!
+    # 'User' input values
+    data: UserInput!
+  ): User
+  # Create a new document in the collection of 'User'
+  createUser(
+    # 'User' input values
+    data: UserInput!
+  ): User!
+  # Update an existing document in the collection of 'RegularDuty'
+  updateRegularDuty(
+    # The 'RegularDuty' document's ID
+    id: ID!
+    # 'RegularDuty' input values
+    data: RegularDutyInput!
+  ): RegularDuty
+  # Create a new document in the collection of 'Duty'
+  createDuty(
+    # 'Duty' input values
+    data: DutyInput!
+  ): Duty!
+  # Delete an existing document in the collection of 'Duty'
+  deleteDuty(
+    # The 'Duty' document's ID
+    id: ID!
+  ): Duty
+  # Delete an existing document in the collection of 'RegularDuty'
+  deleteRegularDuty(
+    # The 'RegularDuty' document's ID
+    id: ID!
+  ): RegularDuty
+  # Update an existing document in the collection of 'Duty'
+  updateDuty(
+    # The 'Duty' document's ID
+    id: ID!
+    # 'Duty' input values
+    data: DutyInput!
+  ): Duty
+  # Delete an existing document in the collection of 'User'
+  deleteUser(
+    # The 'User' document's ID
+    id: ID!
+  ): User
+  # Create a new document in the collection of 'RegularDuty'
+  createRegularDuty(
+    # 'RegularDuty' input values
+    data: RegularDutyInput!
+  ): RegularDuty!
+}
+
+type Query {
+  duty(date: Date!): Duty
+  # Find a document from the collection of 'RegularDuty' by its id.
+  findRegularDutyByID(
+    # The 'RegularDuty' document's ID
+    id: ID!
+  ): RegularDuty
+  regularDuties(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): RegularDutyPage!
+  # Find a document from the collection of 'User' by its id.
+  findUserByID(
+    # The 'User' document's ID
+    id: ID!
+  ): User
+  team(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): UserPage!
+  regularDuty(weekday: Weekday!): RegularDuty
+  duties(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): DutyPage!
+  user(id: ID!): User
+  # Find a document from the collection of 'Duty' by its id.
+  findDutyByID(
+    # The 'Duty' document's ID
+    id: ID!
+  ): Duty
+}
+
+type RegularDuty {
+  # The document's ID.
+  _id: ID!
+  # The document's timestamp.
+  _ts: Long!
+  weekday: Weekday!
+  responsible: User
+}
+
+# 'RegularDuty' input values
+input RegularDutyInput {
+  weekday: Weekday!
+  responsible: RegularDutyResponsibleRelation
+}
+
+# The pagination object for elements of type 'RegularDuty'.
+type RegularDutyPage {
+  # The elements of type 'RegularDuty' in this page.
+  data: [RegularDuty]!
+  # A cursor for elements coming after the current page.
+  after: String
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+# Allow manipulating the relationship between the types 'RegularDuty' and 'User' using the field 'RegularDuty.responsible'.
+input RegularDutyResponsibleRelation {
+  # Create a document of type 'User' and associate it with the current document.
+  create: UserInput
+  # Connect a document of type 'User' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'User'
+  disconnect: Boolean
+}
+
+scalar Time
+
+type User {
+  # The document's ID.
+  _id: ID!
+  # The document's timestamp.
+  _ts: Long!
+  id: ID!
+  balance: Int
+}
+
+# 'User' input values
+input UserInput {
+  id: ID!
+  balance: Int
+}
+
+# The pagination object for elements of type 'User'.
+type UserPage {
+  # The elements of type 'User' in this page.
+  data: [User]!
+  # A cursor for elements coming after the current page.
+  after: String
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+enum Weekday {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+

@@ -1,0 +1,83 @@
+type Avatar {
+    url: String
+}
+
+type Profile {
+    avatar: Avatar
+}
+
+type Absense {
+    available: Boolean!
+    reason: String
+}
+
+scalar MyDate
+
+enum Weekday {
+    Monday
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+    Sunday
+}
+
+type RegularDuty {
+    id: ID!
+    weekday: Weekday!
+    responsible: User
+}
+
+type Duty {
+    id: ID!
+    date: String!
+    responsible: User
+    isOverride: Boolean!
+    isConflict: Boolean!
+}
+
+type User {
+    id: ID!
+    name: String!
+    username: String!
+    profile: Profile
+    absence(date: MyDate): Absense
+    balance: Int
+}
+
+type Team {
+    id: ID!
+    users: [User!]!
+}
+
+type RegularDuties {
+    id: ID!
+    items: [RegularDuty!]!
+}
+
+type Duties {
+    id: ID!
+    items: [Duty!]!
+}
+
+type Query {
+    me: User
+    search(query: String): [User!]!
+    team: Team
+    regularDuties: RegularDuties
+    duties: Duties
+}
+
+type SetRegularDutyPayload {
+    regularDuty: RegularDuty
+    duties: Duties
+}
+
+type Mutation {
+    addTeamMember(userId: ID!): Team
+    removeTeamMember(userId: ID!): Team
+
+    setRegularDuty(weekday: Weekday!, userId: ID!): RegularDuty
+    setDuty(date: MyDate, userId: ID!): Duty
+}

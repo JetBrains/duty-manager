@@ -1,0 +1,31 @@
+.list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 calc(-2 * var(--ring-unit));
+    line-height: calc(4 * var(--ring-unit) - 2px);
+}
+
+.item {
+    padding: 0 var(--ring-unit) 2px calc(2 * var(--ring-unit));
+
+    &:hover {
+        background-color: var(--ring-hover-background-color);
+    }
+}
+
+.avatar {
+    max-width: calc(2.5 * var(--ring-unit));
+    max-height: calc(2.5 * var(--ring-unit));
+    overflow: hidden;
+    margin-right: var(--ring-unit);
+    vertical-align: -5px;
+}
+
+.heading {
+    margin-bottom: calc(var(--ring-unit) / 2);
+}
+
+.popup {
+    padding: var(--ring-unit) calc(2 * var(--ring-unit)) calc(2 * var(--ring-unit));
+}
+

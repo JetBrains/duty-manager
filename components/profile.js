@@ -1,15 +1,15 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {Profile as RingProfile} from '@jetbrains/ring-ui/components/header/header'
 import {graphql, preloadQuery, usePreloadedQuery} from 'react-relay/hooks'
 
 import RelayEnvironment from '../utils/relay-environment'
-
-const GuestUser = {guest: true}
+import authenticate from '../utils/authenticate'
 
 const ProfileQuery = graphql`
   query profileQuery {
     me {
       name
+      username
       profile {
         avatar {
           url
@@ -20,9 +20,20 @@ const ProfileQuery = graphql`
 `
 
 const preloadedQuery = preloadQuery(RelayEnvironment, ProfileQuery)
+module.hot?.decline()
 
 function Profile() {
-  return <RingProfile user={GuestUser} onLogin={authenticate} />
+  const {me} = usePreloadedQuery(ProfileQuery, preloadedQuery)
+
+  return (
+    <RingProfile
+      user={me}
+      profileUrl={`${process.env.SPACE_URL}/m/${me.username}`}
+      showLogOut
+      onLogin={authenticate}
+      onLogout={() => authenticate(true)}
+    />
+  )
 }
 
 export default function ProfileContainer(props) {

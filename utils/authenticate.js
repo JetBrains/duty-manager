@@ -1,20 +1,15 @@
-const scope = 'ViewAbsences'
-// const authUrl = `${process.env.SPACE_URL}/oauth/auth?response_type=token&redirect_uri=${location.origin}/authorized&client_id=${process.env.SPACE_CLIENT_ID}&scope=${scope}`
-const authUrl = '/authorized'
+const SCOPE = 'Profile:ViewAbsences'
 
-export default function authenticate() {
-  const authWindow = window.open(authUrl, 'blank')
-  return new Promise((resolve, reject) => {
-    const messageListener = e => {
-      window.removeEventListener('message', messageListener)
-      console.log(e)
-    }
-    window.addEventListener('message', messageListener)
+export default function authenticate(force = false) {
+  if (force) {
+    document.cookie =
+      'space_token=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+  }
 
-    const closeListener = e => {
-      authWindow.removeEventListener('close', closeListener)
-      reject()
-    }
-    authWindow.addEventListener('close', closeListener)
-  })
+  const authUrl = `${process.env.SPACE_URL}/oauth/auth?request_credentials=${
+    force ? 'required' : 'default'
+  }&response_type=token&redirect_uri=${location.origin}&client_id=${
+    process.env.SPACE_CLIENT_ID
+  }&scope=${SCOPE}`
+  location.replace(authUrl)
 }

@@ -1,0 +1,35 @@
+#scalar Date
+
+enum Weekday {
+    Monday
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+    Sunday
+}
+
+type RegularDuty {
+    weekday: Weekday! @unique
+    responsible: User
+}
+
+type Duty {
+    date: Date! @unique
+    responsible: User
+}
+
+type User {
+    id: ID! @unique
+    balance: Int
+}
+
+type Query {
+    team: [User!]!
+    user(id: ID!): User
+    regularDuties: [RegularDuty!]!
+    regularDuty(weekday: Weekday!): RegularDuty
+    duties: [Duty!]!
+    duty(date: Date!): Duty
+}

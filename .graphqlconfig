@@ -1,0 +1,29 @@
+{
+  "name": "Untitled GraphQL Schema",
+  "projects": {
+    "fauna": {
+      "includes": [
+        "fauna/**"
+      ]
+    },
+    "main": {
+      "includes": [
+        "main-schema/**",
+        "components/**",
+        "pages/**",
+        "utils/**"
+      ]
+    }
+  },
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "http://localhost:3000/api/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        },
+        "introspect": false
+      }
+    }
+  }
+}

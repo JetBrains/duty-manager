@@ -1,11 +1,14 @@
 import Head from 'next/head'
 import {RelayEnvironmentProvider} from 'react-relay/hooks'
-import RelayEnvironment from '../utils/relay-environment'
 
+import RelayEnvironment from '../utils/relay-environment'
+import '../utils/set-cookie'
 import '../utils/jsdom'
 import Header, {Tray} from '@jetbrains/ring-ui/components/header/header'
 
 import Profile from '../components/profile'
+import Settings from '../components/settings'
+
 import './index.css'
 
 function App() {
@@ -17,6 +20,7 @@ function App() {
       <Header>
         <h1>Duty Manager</h1>
         <Tray>
+          <Settings />
           <Profile />
         </Tray>
       </Header>

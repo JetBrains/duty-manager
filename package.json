@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "yarn relay && next build",
     "start": "next start",
-    "relay": "relay-compiler --schema schema.graphql --src ./ --exclude '**/api/**' '**/.next/**' '**/node_modules/**' '**/test/**' '**/__generated__/**' '**/schema/**'",
+    "relay": "relay-compiler --schema main-schema/schema.graphql --src ./ --exclude '**/fauna/**' '**/fauna-src/**' '**/api/**' '**/.next/**' '**/node_modules/**' '**/test/**' '**/__generated__/**' '**/schema/**'",
     "relay-dev": "yarn relay --watch"
   },
   "dependencies": {
@@ -22,10 +22,11 @@
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
     "graphql-import": "^0.7.1",
+    "graphql-relay": "^0.6.0",
     "jsdom": "^16.0.0",
     "next": "9.2.0",
-    "react": "16.12.0",
-    "react-dom": "16.12.0",
+    "react": "^0.0.0-experimental-f42431abe",
+    "react-dom": "^0.0.0-experimental-f42431abe",
     "react-relay": "^0.0.0-experimental-5f1cb628",
     "relay-compiler": "^8.0.0",
     "webpack": "^4.41.5"

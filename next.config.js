@@ -1,16 +1,18 @@
+const path = require('path')
 const {config, loaders} = require('@jetbrains/ring-ui/webpack.config')
-const withCSS = require('@zeit/next-css')
 require('dotenv').config()
 
 const {SPACE_URL, SPACE_CLIENT_ID} = process.env
 
-module.exports = withCSS({
+module.exports = {
   cssModules: true,
   env: {SPACE_URL, SPACE_CLIENT_ID},
   webpack(baseConfig) {
-    baseConfig.module.rules = baseConfig.module.rules.concat(
-      config.module.rules.filter(rule => rule !== loaders.cssLoader),
+    loaders.cssLoader.include.push(
+      path.resolve(__dirname, 'components'),
+      path.resolve(__dirname, 'pages'),
     )
+    baseConfig.module.rules.push(...config.module.rules)
     baseConfig.externals = (baseConfig.externals || []).map(external =>
       typeof external === 'function'
         ? (context, request, callback) => {
@@ -29,4 +31,5 @@ module.exports = withCSS({
     return baseConfig
   },
   target: 'serverless',
-})
+  experimental: {reactMode: 'concurrent'},
+}
