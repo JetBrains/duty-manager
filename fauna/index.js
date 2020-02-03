@@ -140,6 +140,8 @@ const getUser = async id =>
           query($id: ID!) {
             user(id: $id) {
               _id
+              id
+              balance
             }
           }
         `,
@@ -217,37 +219,73 @@ export async function setRegularDuty({weekday, responsibleId, backupId}) {
   return fetchRegularDuties()
 }
 
-const createOrUpdateDuty = (id, data) =>
+const createOrUpdateDuty = (id, data, responsible, prevResponsible) =>
   fetchQuery(
     data => data,
-    id != null
-      ? gql`
-          mutation($id: ID!, $data: DutyInput!) {
-            updateDuty(id: $id, data: $data) {
-              date
-              responsible {
-                id
-                balance
-              }
-            }
+    gql`
+      mutation(
+        $update: Boolean!
+        $id: ID!
+        $data: DutyInput!
+        $hasResponsible: Boolean!
+        $responsibleId: ID!
+        $responsible: UserInput!
+        $hasPrevResponsible: Boolean!
+        $prevResponsibleId: ID!
+        $prevResponsible: UserInput!
+      ) {
+        updateDuty(id: $id, data: $data) @include(if: $update) {
+          date
+          responsible {
+            id
+            balance
           }
-        `
-      : gql`
-          mutation($data: DutyInput!) {
-            createDuty(data: $data) {
-              date
-              responsible {
-                id
-                balance
-              }
-            }
+        }
+        createDuty(data: $data) @skip(if: $update) {
+          date
+          responsible {
+            id
+            balance
           }
-        `,
-    {id, data},
+        }
+        updateUser(id: $responsibleId, data: $responsible)
+          @include(if: $hasResponsible) {
+          balance
+        }
+        updatePrevResponsible: updateUser(
+          id: $prevResponsibleId
+          data: $prevResponsible
+        ) @include(if: $hasPrevResponsible) {
+          balance
+        }
+      }
+    `,
+    {
+      update: id != null,
+      id: id ?? 'unused',
+      data,
+      hasResponsible: responsible != null,
+      responsible:
+        responsible != null
+          ? {id: responsible.id, balance: responsible.balance + 1}
+          : {id: 'unused', balance: 0},
+      responsibleId: responsible?._id ?? 'unused',
+      hasPrevResponsible: prevResponsible != null,
+      prevResponsible:
+        prevResponsible != null
+          ? {id: prevResponsible.id, balance: prevResponsible.balance - 1}
+          : {id: 'unused', balance: 0},
+      prevResponsibleId: prevResponsible?._id ?? 'unused',
+    },
   )
 
-export async function setDuty({date, responsibleId, backupId}) {
-  const [duty, responsible, backup] = await Promise.all([
+export async function setDuty({
+  date,
+  responsibleId,
+  backupId,
+  prevResponsibleId,
+}) {
+  const [duty, responsible, backup, prevResponsible] = await Promise.all([
     fetchQuery(
       data => data.duty,
       gql`
@@ -261,6 +299,7 @@ export async function setDuty({date, responsibleId, backupId}) {
     ),
     getUser(responsibleId),
     getUser(backupId),
+    getUser(prevResponsibleId),
   ])
 
   const data = {
@@ -269,6 +308,33 @@ export async function setDuty({date, responsibleId, backupId}) {
     ...(backup != null ? {backup: createConnect(backup)} : {}),
   }
 
-  await createOrUpdateDuty(duty?._id, data)
-  return fetchDuties()
+  await createOrUpdateDuty(duty?._id, data, responsible, prevResponsible)
+  return fetchQuery(
+    ({duties, dutyTeam}) => ({duties: duties.data, team: dutyTeam.users.data}),
+    gql`
+      query {
+        duties {
+          data {
+            date
+            responsible {
+              id
+              balance
+            }
+            backup {
+              id
+              balance
+            }
+          }
+        }
+        dutyTeam {
+          users {
+            data {
+              id
+              balance
+            }
+          }
+        }
+      }
+    `,
+  )
 }

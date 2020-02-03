@@ -1,3 +1,20 @@
 .select {
     max-width: calc(var(--ring-unit) * 30);
 }
+
+.error > button {
+    color: var(--ring-error-color);
+    border-bottom: 2px solid var(--ring-icon-error-color);
+}
+
+.balance {
+    margin-left: var(--ring-unit);
+}
+
+.positive {
+    color: var(--ring-success-color);
+}
+
+.negative {
+    color: var(--ring-error-color);
+}

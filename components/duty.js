@@ -8,8 +8,15 @@ import {regularDutyFragment} from './regular-duty'
 const mutation = graphql`
   mutation dutySetResponsibleMutation($input: SetDutyInput!) {
     setDuty(input: $input) {
-      items {
-        ...dutyFragment
+      duties {
+        items {
+          ...dutyFragment
+        }
+      }
+      team {
+        users {
+          balance
+        }
       }
     }
   }
@@ -22,11 +29,23 @@ export const createOptimisticUpdater = ({
   userField,
   userId,
   idPrefix,
+  updateBalance,
+  prevResponsibleId,
 }) => store => {
   const duties = store.get(listId)
   const items = duties.getLinkedRecords('items')
   const prevDuty = items.find(item => item.getValue(dateField) === dateValue)
   const userRecord = store.get(userId)
+  if (updateBalance) {
+    const balance = userRecord.getValue('balance')
+    userRecord.setValue(balance + 1, 'balance')
+    if (prevResponsibleId != null) {
+      const prevResponsible = store.get(prevResponsibleId)
+      const prevResponsibleBalance = prevResponsible.getValue('balance')
+      prevResponsible.setValue(prevResponsibleBalance - 1, 'balance')
+    }
+  }
+
   if (prevDuty != null) {
     prevDuty.setLinkedRecord(userRecord, userField)
   } else {
@@ -51,6 +70,7 @@ export default function Duty({date, duty, regularDuty, listId}) {
       fragment dutyFragment on Duty {
         date
         responsible {
+          id
           ...userSelectUserFragment
           ...userSelectExcludedFragment
         }
@@ -69,12 +89,19 @@ export default function Duty({date, duty, regularDuty, listId}) {
     <div>
       <H2>{date.getDate()}</H2>
       <UserSelect
+        dateString={dateString}
         selected={responsible}
         label="Responsible"
         onSelect={({user}) =>
           commitMutation(environment, {
             mutation,
-            variables: {input: {date: dateString, responsibleId: user.id}},
+            variables: {
+              input: {
+                date: dateString,
+                responsibleId: user.id,
+                prevResponsibleId: responsible?.id,
+              },
+            },
             optimisticUpdater: createOptimisticUpdater({
               listId,
               dateField: 'date',
@@ -82,11 +109,14 @@ export default function Duty({date, duty, regularDuty, listId}) {
               userField: 'responsible',
               userId: user.id,
               idPrefix: 'duty',
+              updateBalance: true,
+              prevResponsibleId: responsible?.id,
             }),
           })
         }
       />
       <UserSelect
+        dateString={dateString}
         selected={backup}
         label="Backup"
         excluded={responsible}

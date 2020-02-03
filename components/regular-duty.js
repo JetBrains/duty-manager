@@ -9,6 +9,7 @@ export const regularDutyFragment = graphql`
   fragment regularDutyFragment on RegularDuty {
     weekday
     responsible {
+      id
       ...userSelectUserFragment
       ...userSelectExcludedFragment
     }

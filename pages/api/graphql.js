@@ -15,7 +15,14 @@ import {
   setDuty,
 } from '../../fauna'
 
-const User = ({id, name, smallAvatar, username}) => ({
+const Absence = ({available, description, since, till}) => ({
+  available,
+  reason: description,
+  since: since.iso,
+  till: till.iso,
+})
+
+const User = ({id, name, smallAvatar, username, absences}) => ({
   id,
   username,
   name: () => `${name.firstName} ${name.lastName}`,
@@ -29,9 +36,11 @@ const User = ({id, name, smallAvatar, username}) => ({
         },
       }
     }),
+  absences: () => absences.map(Absence),
 })
 
-const userFields = 'id,name,smallAvatar,username'
+const userFields =
+  'id,name,smallAvatar,username,absences(available,description,since,till)'
 
 async function DBUser({id, balance}, {fetch}) {
   const {data} = await fetch(
@@ -116,9 +125,9 @@ const graphqlMiddleware = fetch =>
         const data = await setRegularDuty(input)
         return RegularDuties(data)
       },
-      async setDuty({input}) {
-        const data = await setDuty(input)
-        return Duties(data)
+      async setDuty({input}, context) {
+        const {duties, team} = await setDuty(input)
+        return {duties: () => Duties(duties), team: () => Team(team, context)}
       },
     },
     context: {fetch},

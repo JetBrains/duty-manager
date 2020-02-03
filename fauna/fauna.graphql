@@ -251,7 +251,7 @@ scalar Time
 type User {
   # The document's ID.
   _id: ID!
-  balance: Int
+  balance: Int!
   id: ID!
   team: Team
   # The document's timestamp.
@@ -261,7 +261,7 @@ type User {
 # 'User' input values
 input UserInput {
   id: ID!
-  balance: Int
+  balance: Int!
   team: UserTeamRelation
 }
 

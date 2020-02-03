@@ -6,11 +6,11 @@ type Profile {
     avatar: Avatar
 }
 
-type Absense {
+type Absence {
     available: Boolean!
     reason: String
-    since: Date
-    till: Date
+    since: Date!
+    till: Date!
 }
 
 scalar Date
@@ -35,7 +35,6 @@ type Duty {
     date: Date!
     responsible: User
     backup: User
-    isConflict: Boolean!
 }
 
 type User {
@@ -43,7 +42,7 @@ type User {
     name: String!
     username: String!
     profile: Profile
-    absences: [Absense!]!
+    absences: [Absence!]!
     balance: Int
 }
 
@@ -80,6 +79,12 @@ input SetDutyInput {
     date: Date!
     responsibleId: ID
     backupId: ID
+    prevResponsibleId: ID
+}
+
+type SetDutyPayload {
+    duties: Duties
+    team: Team
 }
 
 type Mutation {
@@ -87,5 +92,5 @@ type Mutation {
     removeTeamMember(userId: ID!): Team
 
     setRegularDuty(input: SetRegularDutyInput!): RegularDuties
-    setDuty(input: SetDutyInput!): Duties
+    setDuty(input: SetDutyInput!): SetDutyPayload
 }

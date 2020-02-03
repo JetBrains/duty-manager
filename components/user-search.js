@@ -8,6 +8,7 @@ import RelayEnvironment from '../utils/relay-environment'
 
 import styles from './user-search.css'
 import SUSPENSE_CONFIG from '../utils/suspense-config'
+import {createItem} from "./user-select";
 
 const Query = graphql`
   query userSearchQuery($query: String!) {
@@ -24,17 +25,6 @@ const Query = graphql`
 `
 
 const initialPreloadedQuery = preloadQuery(RelayEnvironment, Query, {query: ''})
-
-export function createItem(user) {
-  const {id, name, profile, excluded} = user
-  return {
-    key: id,
-    label: name,
-    avatar: profile?.avatar?.url,
-    disabled: excluded,
-    user,
-  }
-}
 
 export default function UserSearch({users, onSelect, onDeselect}) {
   const [preloadedQuery, setPreloadedQuery] = useState(initialPreloadedQuery)
