@@ -1,6 +1,7 @@
 @import '~@jetbrains/ring-ui/components/global/variables.css';
 
 body {
+    min-width: calc(var(--ring-unit) * 100);
     margin: 0;
     font-size: var(--ring-font-size);
     line-height: var(--ring-line-height);

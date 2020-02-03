@@ -10,18 +10,30 @@ directive @unique(index: String) on FIELD_DEFINITION
 scalar Date
 
 type Duty {
+  backup: User
   # The document's ID.
   _id: ID!
+  responsible: User
+  date: Date!
   # The document's timestamp.
   _ts: Long!
-  date: Date!
-  responsible: User
+}
+
+# Allow manipulating the relationship between the types 'Duty' and 'User' using the field 'Duty.backup'.
+input DutyBackupRelation {
+  # Create a document of type 'User' and associate it with the current document.
+  create: UserInput
+  # Connect a document of type 'User' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'User'
+  disconnect: Boolean
 }
 
 # 'Duty' input values
 input DutyInput {
   date: Date!
   responsible: DutyResponsibleRelation
+  backup: DutyBackupRelation
 }
 
 # The pagination object for elements of type 'Duty'.
@@ -79,6 +91,11 @@ type Mutation {
     # The 'Duty' document's ID
     id: ID!
   ): Duty
+  # Create a new document in the collection of 'Team'
+  createTeam(
+    # 'Team' input values
+    data: TeamInput!
+  ): Team!
   # Delete an existing document in the collection of 'RegularDuty'
   deleteRegularDuty(
     # The 'RegularDuty' document's ID
@@ -96,6 +113,18 @@ type Mutation {
     # The 'User' document's ID
     id: ID!
   ): User
+  # Update an existing document in the collection of 'Team'
+  updateTeam(
+    # The 'Team' document's ID
+    id: ID!
+    # 'Team' input values
+    data: TeamInput!
+  ): Team
+  # Delete an existing document in the collection of 'Team'
+  deleteTeam(
+    # The 'Team' document's ID
+    id: ID!
+  ): Team
   # Create a new document in the collection of 'RegularDuty'
   createRegularDuty(
     # 'RegularDuty' input values
@@ -116,17 +145,17 @@ type Query {
     # The pagination cursor.
     _cursor: String
   ): RegularDutyPage!
+  # Find a document from the collection of 'Team' by its id.
+  findTeamByID(
+    # The 'Team' document's ID
+    id: ID!
+  ): Team
   # Find a document from the collection of 'User' by its id.
   findUserByID(
     # The 'User' document's ID
     id: ID!
   ): User
-  team(
-    # The number of items to return per page.
-    _size: Int
-    # The pagination cursor.
-    _cursor: String
-  ): UserPage!
+  dutyTeam: Team
   regularDuty(weekday: Weekday!): RegularDuty
   duties(
     # The number of items to return per page.
@@ -143,18 +172,30 @@ type Query {
 }
 
 type RegularDuty {
+  backup: User
   # The document's ID.
   _id: ID!
+  responsible: User
+  weekday: Weekday!
   # The document's timestamp.
   _ts: Long!
-  weekday: Weekday!
-  responsible: User
+}
+
+# Allow manipulating the relationship between the types 'RegularDuty' and 'User' using the field 'RegularDuty.backup'.
+input RegularDutyBackupRelation {
+  # Create a document of type 'User' and associate it with the current document.
+  create: UserInput
+  # Connect a document of type 'User' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'User'
+  disconnect: Boolean
 }
 
 # 'RegularDuty' input values
 input RegularDutyInput {
   weekday: Weekday!
   responsible: RegularDutyResponsibleRelation
+  backup: RegularDutyBackupRelation
 }
 
 # The pagination object for elements of type 'RegularDuty'.
@@ -177,21 +218,51 @@ input RegularDutyResponsibleRelation {
   disconnect: Boolean
 }
 
+type Team {
+  # The document's ID.
+  _id: ID!
+  # The document's timestamp.
+  _ts: Long!
+  users(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): UserPage!
+}
+
+# 'Team' input values
+input TeamInput {
+  users: TeamUsersRelation
+}
+
+# Allow manipulating the relationship between the types 'Team' and 'User'.
+input TeamUsersRelation {
+  # Create one or more documents of type 'User' and associate them with the current document.
+  create: [UserInput]
+  # Connect one or more documents of type 'User' with the current document using their IDs.
+  connect: [ID]
+  # Disconnect the given documents of type 'User' from the current document using their IDs.
+  disconnect: [ID]
+}
+
 scalar Time
 
 type User {
   # The document's ID.
   _id: ID!
+  balance: Int
+  id: ID!
+  team: Team
   # The document's timestamp.
   _ts: Long!
-  id: ID!
-  balance: Int
 }
 
 # 'User' input values
 input UserInput {
   id: ID!
   balance: Int
+  team: UserTeamRelation
 }
 
 # The pagination object for elements of type 'User'.
@@ -202,6 +273,16 @@ type UserPage {
   after: String
   # A cursor for elements coming before the current page.
   before: String
+}
+
+# Allow manipulating the relationship between the types 'User' and 'Team' using the field 'User.team'.
+input UserTeamRelation {
+  # Create a document of type 'Team' and associate it with the current document.
+  create: TeamInput
+  # Connect a document of type 'Team' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'Team'
+  disconnect: Boolean
 }
 
 enum Weekday {

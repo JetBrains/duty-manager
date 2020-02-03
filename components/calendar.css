@@ -1,0 +1,15 @@
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(128px, 1fr));
+    padding: calc(var(--ring-unit) * 3) calc(var(--ring-unit) * 4);
+    grid-gap: calc(var(--ring-unit) * 3);
+}
+
+.month {
+    grid-column-start: 1;
+}
+
+.monthHeading.monthHeading {
+    margin-top: calc(var(--ring-unit) * 2);
+    margin-bottom: 0;
+}

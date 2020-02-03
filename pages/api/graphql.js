@@ -48,14 +48,26 @@ const Team = (users, context) => ({
   users: () => users.map(user => DBUser(user, context)),
 })
 
-const RegularDuty = ({weekday, responsible}) => ({
+const RegularDuty = ({weekday, responsible, backup}) => ({
   weekday,
-  responsible: (_, context) => DBUser(responsible, context),
+  responsible: responsible && ((_, context) => DBUser(responsible, context)),
+  backup: backup && ((_, context) => DBUser(backup, context)),
 })
 
-const Duty = ({date, responsible}) => ({
+const RegularDuties = data => ({
+  id: `regularDuties`,
+  items: data.map(RegularDuty),
+})
+
+const Duty = ({date, responsible, backup}) => ({
   date,
-  responsible: (_, context) => DBUser(responsible, context),
+  responsible: responsible && ((_, context) => DBUser(responsible, context)),
+  backup: backup && ((_, context) => DBUser(backup, context)),
+})
+
+const Duties = data => ({
+  id: `duties`,
+  items: data.map(Duty),
 })
 
 const graphqlMiddleware = fetch =>
@@ -86,11 +98,11 @@ const graphqlMiddleware = fetch =>
       },
       async regularDuties() {
         const data = await fetchRegularDuties()
-        return data.map(RegularDuty)
+        return RegularDuties(data)
       },
       async duties() {
         const data = await fetchDuties()
-        return data.map(Duty)
+        return Duties(data)
       },
       async addTeamMember(variables, context) {
         const data = await addTeamMember(variables)
@@ -100,13 +112,13 @@ const graphqlMiddleware = fetch =>
         const data = await removeTeamMember(variables)
         return Team(data, context)
       },
-      async setRegularDuty(variables) {
-        const data = await setRegularDuty(variables)
-        return RegularDuty(data)
+      async setRegularDuty({input}) {
+        const data = await setRegularDuty(input)
+        return RegularDuties(data)
       },
-      async setDuty(variables) {
-        const data = await setDuty(variables)
-        return Duty(data)
+      async setDuty({input}) {
+        const data = await setDuty(input)
+        return Duties(data)
       },
     },
     context: {fetch},

@@ -25,12 +25,13 @@ const Query = graphql`
 
 const initialPreloadedQuery = preloadQuery(RelayEnvironment, Query, {query: ''})
 
-function createItem(user) {
-  const {id, name, profile} = user
+export function createItem(user) {
+  const {id, name, profile, excluded} = user
   return {
     key: id,
     label: name,
     avatar: profile?.avatar?.url,
+    disabled: excluded,
     user,
   }
 }

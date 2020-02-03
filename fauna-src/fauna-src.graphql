@@ -1,5 +1,3 @@
-#scalar Date
-
 enum Weekday {
     Monday
     Tuesday
@@ -13,20 +11,27 @@ enum Weekday {
 type RegularDuty {
     weekday: Weekday! @unique
     responsible: User
+    backup: User
 }
 
 type Duty {
     date: Date! @unique
     responsible: User
+    backup: User
 }
 
 type User {
     id: ID! @unique
     balance: Int
+    team: Team
+}
+
+type Team {
+    users: [User!]! @relation
 }
 
 type Query {
-    team: [User!]!
+    dutyTeam: Team
     user(id: ID!): User
     regularDuties: [RegularDuty!]!
     regularDuty(weekday: Weekday!): RegularDuty

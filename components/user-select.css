@@ -1,0 +1,3 @@
+.select {
+    max-width: calc(var(--ring-unit) * 30);
+}

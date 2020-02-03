@@ -9,12 +9,10 @@ import {commitMutation} from 'react-relay'
 import {graphql, preloadQuery, usePreloadedQuery} from 'react-relay/hooks'
 
 import RelayEnvironment from '../utils/relay-environment'
-import SUSPENSE_CONFIG from '../utils/suspense-config'
 
 import styles from './team.css'
 import UserSearch from './user-search'
 import Popup from '@jetbrains/ring-ui/components/popup/popup'
-import Dropdown from '@jetbrains/ring-ui/components/dropdown/dropdown'
 
 const TeamQuery = graphql`
   query teamQuery {

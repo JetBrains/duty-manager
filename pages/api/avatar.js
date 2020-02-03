@@ -12,5 +12,7 @@ export default async (request, response) => {
     },
     responseType: 'stream',
   })
-  spaceResponse.data.pipe(response)
+  return new Promise(resolve =>
+    spaceResponse.data.pipe(response).on('end', resolve),
+  )
 }

@@ -8,6 +8,7 @@ import Header, {Tray} from '@jetbrains/ring-ui/components/header/header'
 
 import Profile from '../components/profile'
 import Settings from '../components/settings'
+import Calendar from '../components/calendar'
 
 import './index.css'
 
@@ -24,6 +25,7 @@ function App() {
           <Profile />
         </Tray>
       </Header>
+      <Calendar />
     </RelayEnvironmentProvider>
   )
 }

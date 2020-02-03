@@ -9,9 +9,11 @@ type Profile {
 type Absense {
     available: Boolean!
     reason: String
+    since: Date
+    till: Date
 }
 
-scalar MyDate
+scalar Date
 
 enum Weekday {
     Monday
@@ -24,16 +26,15 @@ enum Weekday {
 }
 
 type RegularDuty {
-    id: ID!
     weekday: Weekday!
     responsible: User
+    backup: User
 }
 
 type Duty {
-    id: ID!
-    date: String!
+    date: Date!
     responsible: User
-    isOverride: Boolean!
+    backup: User
     isConflict: Boolean!
 }
 
@@ -42,7 +43,7 @@ type User {
     name: String!
     username: String!
     profile: Profile
-    absence(date: MyDate): Absense
+    absences: [Absense!]!
     balance: Int
 }
 
@@ -69,15 +70,22 @@ type Query {
     duties: Duties
 }
 
-type SetRegularDutyPayload {
-    regularDuty: RegularDuty
-    duties: Duties
+input SetRegularDutyInput {
+    weekday: Weekday!
+    responsibleId: ID
+    backupId: ID
+}
+
+input SetDutyInput {
+    date: Date!
+    responsibleId: ID
+    backupId: ID
 }
 
 type Mutation {
     addTeamMember(userId: ID!): Team
     removeTeamMember(userId: ID!): Team
 
-    setRegularDuty(weekday: Weekday!, userId: ID!): RegularDuty
-    setDuty(date: MyDate, userId: ID!): Duty
+    setRegularDuty(input: SetRegularDutyInput!): RegularDuties
+    setDuty(input: SetDutyInput!): Duties
 }
