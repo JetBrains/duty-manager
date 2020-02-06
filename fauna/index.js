@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 async function fetchQuery(selector, query, variables) {
-  console.log({query, variables})
+  // console.log({query, variables})
   const {data} = await axios.post(
     'https://graphql.fauna.com/graphql',
     {query, variables},
@@ -17,7 +17,7 @@ async function fetchQuery(selector, query, variables) {
   if (data.errors != null) {
     throw new Error(data.errors[0].message)
   }
-  console.log(data.data?.regularDuties?.data)
+  // console.log(data.data?.regularDuties?.data)
   return selector(data.data)
 }
 

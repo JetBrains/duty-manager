@@ -80,6 +80,7 @@ input SetDutyInput {
     responsibleId: ID
     backupId: ID
     prevResponsibleId: ID
+    assignerId: ID
 }
 
 type SetDutyPayload {

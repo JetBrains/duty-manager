@@ -8,8 +8,8 @@
 
 /*::
 import type { ReaderFragment } from 'relay-runtime';
-type userSelectExcludedFragment$ref = any;
 type userSelectUserFragment$ref = any;
+type userSelectUserIdFragment$ref = any;
 export type Weekday = "Friday" | "Monday" | "Saturday" | "Sunday" | "Thursday" | "Tuesday" | "Wednesday" | "%future added value";
 import type { FragmentReference } from "relay-runtime";
 declare export opaque type regularDutyFragment$ref: FragmentReference;
@@ -18,7 +18,7 @@ export type regularDutyFragment = {|
   +weekday: Weekday,
   +responsible: ?{|
     +id: string,
-    +$fragmentRefs: userSelectUserFragment$ref & userSelectExcludedFragment$ref,
+    +$fragmentRefs: userSelectUserFragment$ref & userSelectUserIdFragment$ref,
   |},
   +backup: ?{|
     +$fragmentRefs: userSelectUserFragment$ref
@@ -73,7 +73,7 @@ return {
         (v0/*: any*/),
         {
           "kind": "FragmentSpread",
-          "name": "userSelectExcludedFragment",
+          "name": "userSelectUserIdFragment",
           "args": null
         }
       ]
@@ -94,5 +94,5 @@ return {
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '38b833fc459f48d07b872429d7c6f005';
+(node/*: any*/).hash = 'd0fa838e9ae028faeb63b6f823700bc0';
 module.exports = node;

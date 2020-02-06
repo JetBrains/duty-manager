@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 97003b57630720c0b4e75ff60aacc2ea
+ * @relayHash e77bad1a6b9efc91ddc4bb1f837e3318
  */
 
 /* eslint-disable */
@@ -12,6 +12,7 @@ import type { ConcreteRequest } from 'relay-runtime';
 type dutyFragment$ref = any;
 type regularDutyFragment$ref = any;
 type userSelectTeamFragment$ref = any;
+type userSelectUserIdFragment$ref = any;
 export type Weekday = "Friday" | "Monday" | "Saturday" | "Sunday" | "Thursday" | "Tuesday" | "Wednesday" | "%future added value";
 export type calendarQueryVariables = {||};
 export type calendarQueryResponse = {|
@@ -31,6 +32,9 @@ export type calendarQueryResponse = {|
   |},
   +team: ?{|
     +$fragmentRefs: userSelectTeamFragment$ref
+  |},
+  +me: ?{|
+    +$fragmentRefs: userSelectUserIdFragment$ref
   |},
 |};
 export type calendarQuery = {|
@@ -60,6 +64,10 @@ query calendarQuery {
     ...userSelectTeamFragment
     id
   }
+  me {
+    ...userSelectUserIdFragment
+    id
+  }
 }
 
 fragment dutyFragment on Duty {
@@ -67,7 +75,7 @@ fragment dutyFragment on Duty {
   responsible {
     id
     ...userSelectUserFragment
-    ...userSelectExcludedFragment
+    ...userSelectUserIdFragment
   }
   backup {
     ...userSelectUserFragment
@@ -80,16 +88,12 @@ fragment regularDutyFragment on RegularDuty {
   responsible {
     id
     ...userSelectUserFragment
-    ...userSelectExcludedFragment
+    ...userSelectUserIdFragment
   }
   backup {
     ...userSelectUserFragment
     id
   }
-}
-
-fragment userSelectExcludedFragment on User {
-  id
 }
 
 fragment userSelectTeamFragment on Team {
@@ -126,6 +130,10 @@ fragment userSelectUserFragment on User {
     till
   }
   balance
+}
+
+fragment userSelectUserIdFragment on User {
+  id
 }
 */
 
@@ -338,6 +346,22 @@ return {
             "args": null
           }
         ]
+      },
+      {
+        "kind": "LinkedField",
+        "alias": null,
+        "name": "me",
+        "storageKey": null,
+        "args": null,
+        "concreteType": "User",
+        "plural": false,
+        "selections": [
+          {
+            "kind": "FragmentSpread",
+            "name": "userSelectUserIdFragment",
+            "args": null
+          }
+        ]
       }
     ]
   },
@@ -419,6 +443,18 @@ return {
           },
           (v0/*: any*/)
         ]
+      },
+      {
+        "kind": "LinkedField",
+        "alias": null,
+        "name": "me",
+        "storageKey": null,
+        "args": null,
+        "concreteType": "User",
+        "plural": false,
+        "selections": [
+          (v0/*: any*/)
+        ]
       }
     ]
   },
@@ -426,11 +462,11 @@ return {
     "operationKind": "query",
     "name": "calendarQuery",
     "id": null,
-    "text": "query calendarQuery {\n  regularDuties {\n    id\n    items {\n      weekday\n      ...regularDutyFragment\n    }\n  }\n  duties {\n    id\n    items {\n      date\n      ...dutyFragment\n    }\n  }\n  team {\n    ...userSelectTeamFragment\n    id\n  }\n}\n\nfragment dutyFragment on Duty {\n  date\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectExcludedFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment regularDutyFragment on RegularDuty {\n  weekday\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectExcludedFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment userSelectExcludedFragment on User {\n  id\n}\n\nfragment userSelectTeamFragment on Team {\n  users {\n    id\n    name\n    profile {\n      avatar {\n        url\n      }\n    }\n    absences {\n      available\n      reason\n      since\n      till\n    }\n    balance\n  }\n}\n\nfragment userSelectUserFragment on User {\n  id\n  name\n  profile {\n    avatar {\n      url\n    }\n  }\n  absences {\n    available\n    reason\n    since\n    till\n  }\n  balance\n}\n",
+    "text": "query calendarQuery {\n  regularDuties {\n    id\n    items {\n      weekday\n      ...regularDutyFragment\n    }\n  }\n  duties {\n    id\n    items {\n      date\n      ...dutyFragment\n    }\n  }\n  team {\n    ...userSelectTeamFragment\n    id\n  }\n  me {\n    ...userSelectUserIdFragment\n    id\n  }\n}\n\nfragment dutyFragment on Duty {\n  date\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectUserIdFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment regularDutyFragment on RegularDuty {\n  weekday\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectUserIdFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment userSelectTeamFragment on Team {\n  users {\n    id\n    name\n    profile {\n      avatar {\n        url\n      }\n    }\n    absences {\n      available\n      reason\n      since\n      till\n    }\n    balance\n  }\n}\n\nfragment userSelectUserFragment on User {\n  id\n  name\n  profile {\n    avatar {\n      url\n    }\n  }\n  absences {\n    available\n    reason\n    since\n    till\n  }\n  balance\n}\n\nfragment userSelectUserIdFragment on User {\n  id\n}\n",
     "metadata": {}
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = 'e7b44f3ea6208659539fa7c02b4bdfc7';
+(node/*: any*/).hash = 'cb9477cb88f92ced2e4707fe388c8136';
 module.exports = node;

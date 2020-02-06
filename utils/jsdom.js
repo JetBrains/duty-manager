@@ -3,7 +3,7 @@ if (typeof window === 'undefined') {
   const {JSDOM} = require('jsdom')
   const {window} = new JSDOM('', {url: 'http://localhost'})
   for (const name of Object.getOwnPropertyNames(window)) {
-    if (name in global) {
+    if (name in global || name === 'XMLHttpRequest') {
       continue
     }
 

@@ -2,6 +2,10 @@
     max-width: calc(var(--ring-unit) * 30);
 }
 
+.me > button {
+    font-weight: bold;
+}
+
 .error > button {
     color: var(--ring-error-color);
     border-bottom: 2px solid var(--ring-icon-error-color);

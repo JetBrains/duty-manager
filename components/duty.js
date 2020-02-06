@@ -2,7 +2,7 @@ import {graphql, useFragment, useRelayEnvironment} from 'react-relay/hooks'
 import {commitMutation} from 'react-relay'
 import {H2} from '@jetbrains/ring-ui/components/heading/heading'
 
-import UserSelect from './user-select'
+import UserSelect, {useMyId} from './user-select'
 import {regularDutyFragment} from './regular-duty'
 
 const mutation = graphql`
@@ -62,6 +62,8 @@ export const createOptimisticUpdater = ({
 export const getDateString = date => date.toISOString().slice(0, 10)
 
 export default function Duty({date, duty, regularDuty, listId}) {
+  const myId = useMyId()
+  console.log({myId})
   const dateString = getDateString(date)
   const environment = useRelayEnvironment()
   const regularDutyData = useFragment(regularDutyFragment, regularDuty)
@@ -72,7 +74,7 @@ export default function Duty({date, duty, regularDuty, listId}) {
         responsible {
           id
           ...userSelectUserFragment
-          ...userSelectExcludedFragment
+          ...userSelectUserIdFragment
         }
         backup {
           ...userSelectUserFragment
@@ -100,6 +102,7 @@ export default function Duty({date, duty, regularDuty, listId}) {
                 date: dateString,
                 responsibleId: user.id,
                 prevResponsibleId: responsible?.id,
+                assignerId: myId,
               },
             },
             optimisticUpdater: createOptimisticUpdater({
@@ -123,7 +126,9 @@ export default function Duty({date, duty, regularDuty, listId}) {
         onSelect={({user}) =>
           commitMutation(environment, {
             mutation,
-            variables: {input: {date: dateString, backupId: user?.id}},
+            variables: {
+              input: {date: dateString, backupId: user?.id, assignerId: myId},
+            },
             optimisticUpdater: createOptimisticUpdater({
               listId,
               dateField: 'date',

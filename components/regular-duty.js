@@ -11,7 +11,7 @@ export const regularDutyFragment = graphql`
     responsible {
       id
       ...userSelectUserFragment
-      ...userSelectExcludedFragment
+      ...userSelectUserIdFragment
     }
     backup {
       ...userSelectUserFragment

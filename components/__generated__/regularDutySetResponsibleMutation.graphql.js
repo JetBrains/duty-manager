@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash e5f6f02a23dc06de728c2ee509d0e25f
+ * @relayHash 8961602b2327c01bec93c949b48403f0
  */
 
 /* eslint-disable */
@@ -50,16 +50,12 @@ fragment regularDutyFragment on RegularDuty {
   responsible {
     id
     ...userSelectUserFragment
-    ...userSelectExcludedFragment
+    ...userSelectUserIdFragment
   }
   backup {
     ...userSelectUserFragment
     id
   }
-}
-
-fragment userSelectExcludedFragment on User {
-  id
 }
 
 fragment userSelectUserFragment on User {
@@ -77,6 +73,10 @@ fragment userSelectUserFragment on User {
     till
   }
   balance
+}
+
+fragment userSelectUserIdFragment on User {
+  id
 }
 */
 
@@ -287,7 +287,7 @@ return {
     "operationKind": "mutation",
     "name": "regularDutySetResponsibleMutation",
     "id": null,
-    "text": "mutation regularDutySetResponsibleMutation(\n  $input: SetRegularDutyInput!\n) {\n  setRegularDuty(input: $input) {\n    items {\n      ...regularDutyFragment\n    }\n    id\n  }\n}\n\nfragment regularDutyFragment on RegularDuty {\n  weekday\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectExcludedFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment userSelectExcludedFragment on User {\n  id\n}\n\nfragment userSelectUserFragment on User {\n  id\n  name\n  profile {\n    avatar {\n      url\n    }\n  }\n  absences {\n    available\n    reason\n    since\n    till\n  }\n  balance\n}\n",
+    "text": "mutation regularDutySetResponsibleMutation(\n  $input: SetRegularDutyInput!\n) {\n  setRegularDuty(input: $input) {\n    items {\n      ...regularDutyFragment\n    }\n    id\n  }\n}\n\nfragment regularDutyFragment on RegularDuty {\n  weekday\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectUserIdFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment userSelectUserFragment on User {\n  id\n  name\n  profile {\n    avatar {\n      url\n    }\n  }\n  absences {\n    available\n    reason\n    since\n    till\n  }\n  balance\n}\n\nfragment userSelectUserIdFragment on User {\n  id\n}\n",
     "metadata": {}
   }
 };

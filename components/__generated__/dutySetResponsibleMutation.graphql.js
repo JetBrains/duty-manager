@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 91eab7c301f4046014644567421b7314
+ * @relayHash 3037ac154b3245110d83e6e8d46254f2
  */
 
 /* eslint-disable */
@@ -14,6 +14,8 @@ export type SetDutyInput = {|
   date: any,
   responsibleId?: ?string,
   backupId?: ?string,
+  prevResponsibleId?: ?string,
+  assignerId?: ?string,
 |};
 export type dutySetResponsibleMutationVariables = {|
   input: SetDutyInput
@@ -65,16 +67,12 @@ fragment dutyFragment on Duty {
   responsible {
     id
     ...userSelectUserFragment
-    ...userSelectExcludedFragment
+    ...userSelectUserIdFragment
   }
   backup {
     ...userSelectUserFragment
     id
   }
-}
-
-fragment userSelectExcludedFragment on User {
-  id
 }
 
 fragment userSelectUserFragment on User {
@@ -92,6 +90,10 @@ fragment userSelectUserFragment on User {
     till
   }
   balance
+}
+
+fragment userSelectUserIdFragment on User {
+  id
 }
 */
 
@@ -373,7 +375,7 @@ return {
     "operationKind": "mutation",
     "name": "dutySetResponsibleMutation",
     "id": null,
-    "text": "mutation dutySetResponsibleMutation(\n  $input: SetDutyInput!\n) {\n  setDuty(input: $input) {\n    duties {\n      items {\n        ...dutyFragment\n      }\n      id\n    }\n    team {\n      users {\n        balance\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment dutyFragment on Duty {\n  date\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectExcludedFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment userSelectExcludedFragment on User {\n  id\n}\n\nfragment userSelectUserFragment on User {\n  id\n  name\n  profile {\n    avatar {\n      url\n    }\n  }\n  absences {\n    available\n    reason\n    since\n    till\n  }\n  balance\n}\n",
+    "text": "mutation dutySetResponsibleMutation(\n  $input: SetDutyInput!\n) {\n  setDuty(input: $input) {\n    duties {\n      items {\n        ...dutyFragment\n      }\n      id\n    }\n    team {\n      users {\n        balance\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment dutyFragment on Duty {\n  date\n  responsible {\n    id\n    ...userSelectUserFragment\n    ...userSelectUserIdFragment\n  }\n  backup {\n    ...userSelectUserFragment\n    id\n  }\n}\n\nfragment userSelectUserFragment on User {\n  id\n  name\n  profile {\n    avatar {\n      url\n    }\n  }\n  absences {\n    available\n    reason\n    since\n    till\n  }\n  balance\n}\n\nfragment userSelectUserIdFragment on User {\n  id\n}\n",
     "metadata": {}
   }
 };

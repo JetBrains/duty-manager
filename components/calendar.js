@@ -5,12 +5,12 @@ import Loader from '@jetbrains/ring-ui/components/loader/loader'
 import {H1} from '@jetbrains/ring-ui/components/heading/heading'
 
 import RelayEnvironment from '../utils/relay-environment'
-import TeamContext from '../utils/team-context'
+import {MyContext, TeamContext} from '../utils/contexts'
 
 import RegularDuty from './regular-duty'
 import styles from './calendar.css'
 import Duty, {getDateString} from './duty'
-import pipe from "../utils/pipe";
+import pipe from '../utils/pipe'
 
 const Query = graphql`
   query calendarQuery {
@@ -30,6 +30,9 @@ const Query = graphql`
     }
     team {
       ...userSelectTeamFragment
+    }
+    me {
+      ...userSelectUserIdFragment
     }
   }
 `
@@ -67,7 +70,10 @@ const getWeekday = date =>
   }).format(date)
 
 function Calendar() {
-  const {regularDuties, duties, team} = usePreloadedQuery(Query, preloadedQuery)
+  const {regularDuties, duties, team, me} = usePreloadedQuery(
+    Query,
+    preloadedQuery,
+  )
   const getRegularDuty = weekday =>
     regularDuties.items.find(duty => duty.weekday === weekday)
   const getDuty = dateString =>
@@ -76,43 +82,45 @@ function Calendar() {
   return (
     <div className={styles.calendar}>
       <TeamContext.Provider value={team}>
-        {weekdays.map(weekday => (
-          <RegularDuty
-            key={weekday}
-            weekday={weekday}
-            regularDuty={getRegularDuty(weekday)}
-            listId={regularDuties.id}
-          />
-        ))}
-        {months.slice(0, -1).map(dates => {
-          if (dates.length === 0) {
-            return null
-          }
+        <MyContext.Provider value={me}>
+          {weekdays.map(weekday => (
+            <RegularDuty
+              key={weekday}
+              weekday={weekday}
+              regularDuty={getRegularDuty(weekday)}
+              listId={regularDuties.id}
+            />
+          ))}
+          {months.slice(0, -1).map(dates => {
+            if (dates.length === 0) {
+              return null
+            }
 
-          const month = getMonth(dates[0])
+            const month = getMonth(dates[0])
 
-          return (
-            <Fragment key={month}>
-              <div className={styles.month}>
-                <H1 className={styles.monthHeading}>{month}</H1>
-              </div>
-              {dates.map(date => (
-                <div
-                  className={styles.day}
-                  style={{gridColumnStart: date.getDay()}}
-                  key={date.getDate()}
-                >
-                  <Duty
-                    date={date}
-                    duty={pipe(date, getDateString, getDuty)}
-                    regularDuty={pipe(date, getWeekday, getRegularDuty)}
-                    listId={duties.id}
-                  />
+            return (
+              <Fragment key={month}>
+                <div className={styles.month}>
+                  <H1 className={styles.monthHeading}>{month}</H1>
                 </div>
-              ))}
-            </Fragment>
-          )
-        })}
+                {dates.map(date => (
+                  <div
+                    className={styles.day}
+                    style={{gridColumnStart: date.getDay()}}
+                    key={date.getDate()}
+                  >
+                    <Duty
+                      date={date}
+                      duty={pipe(date, getDateString, getDuty)}
+                      regularDuty={pipe(date, getWeekday, getRegularDuty)}
+                      listId={duties.id}
+                    />
+                  </div>
+                ))}
+              </Fragment>
+            )
+          })}
+        </MyContext.Provider>
       </TeamContext.Provider>
     </div>
   )

@@ -15,6 +15,9 @@ import {
   setDuty,
 } from '../../fauna'
 
+import '../../utils/server/slack'
+import {notifyResponsible} from '../../utils/server/slack'
+
 const Absence = ({available, description, since, till}) => ({
   available,
   reason: description,
@@ -22,7 +25,7 @@ const Absence = ({available, description, since, till}) => ({
   till: till.iso,
 })
 
-const User = ({id, name, smallAvatar, username, absences}) => ({
+const User = ({id, name, smallAvatar, username, absences, emails}) => ({
   id,
   username,
   name: () => `${name.firstName} ${name.lastName}`,
@@ -37,12 +40,16 @@ const User = ({id, name, smallAvatar, username, absences}) => ({
       }
     }),
   absences: () => absences.map(Absence),
+  email: () =>
+    emails
+      .map(item => item.email)
+      .find(email => /^.*@jetbrains\.com$/.test(email)),
 })
 
 const userFields =
-  'id,name,smallAvatar,username,absences(available,description,since,till)'
+  'id,name,smallAvatar,username,absences(available,description,since,till),emails'
 
-async function DBUser({id, balance}, {fetch}) {
+async function DBUser({id, balance}, {fetch, log}) {
   const {data} = await fetch(
     `team-directory/profiles/${id}?$fields=${userFields}`,
   )
@@ -79,7 +86,32 @@ const Duties = data => ({
   items: data.map(Duty),
 })
 
-const graphqlMiddleware = fetch =>
+async function notifyResponsibleIfNeeded(
+  {responsibleId, backupId, assignerId, date},
+  context,
+) {
+  const responsibleOrBackupId = responsibleId ?? backupId
+  if (responsibleOrBackupId == null || assignerId === responsibleOrBackupId) {
+    return
+  }
+
+  const [responsibleEmail, assignerEmail] = await Promise.all(
+    [responsibleOrBackupId, assignerId].map(async id => {
+      const user = await DBUser({id}, context)
+      return user.email()
+    }),
+  )
+
+  notifyResponsible({
+    responsibleEmail,
+    assignerEmail,
+    isBackup: responsibleId == null,
+    date,
+    url: context.url,
+  })
+}
+
+const graphqlMiddleware = ({fetch, url}) =>
   graphqlHTTP({
     schema:
       path.join(process.cwd(), 'main-schema/schema.graphql')
@@ -127,10 +159,12 @@ const graphqlMiddleware = fetch =>
       },
       async setDuty({input}, context) {
         const {duties, team} = await setDuty(input)
+        notifyResponsibleIfNeeded(input, context)
+
         return {duties: () => Duties(duties), team: () => Team(team, context)}
       },
     },
-    context: {fetch},
+    context: {fetch, url},
   })
 
 export default (request, response) => {
@@ -148,5 +182,8 @@ export default (request, response) => {
     }
     return cache[url]
   }
-  return graphqlMiddleware(fetch)(request, response)
+  return graphqlMiddleware({fetch, url: request.headers.origin})(
+    request,
+    response,
+  )
 }

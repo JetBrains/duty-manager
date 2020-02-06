@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import {graphql, useFragment} from 'react-relay/hooks'
 import Select from '@jetbrains/ring-ui/components/select/select'
 
-import TeamContext from '../utils/team-context'
+import {MyContext, TeamContext} from '../utils/contexts'
 
 import styles from './user-select.css'
 
@@ -29,18 +29,31 @@ export function createItem(user) {
     disabled: excluded,
     description,
     user,
-    rightNodes: balance !== 0 && (
-      <span
-        className={classNames(
-          styles.balance,
-          balance > 0 ? styles.positive : styles.negative,
-        )}
-      >
-        {balance > 0 && '+'}
-        {balance}
-      </span>
-    ),
+    rightNodes:
+      balance !== 0 ? (
+        <span
+          className={classNames(
+            styles.balance,
+            balance > 0 ? styles.positive : styles.negative,
+          )}
+        >
+          {balance > 0 && '+'}
+          {balance}
+        </span>
+      ) : null,
   }
+}
+
+const userIdFragment = graphql`
+  fragment userSelectUserIdFragment on User {
+    id
+  }
+`
+
+export function useMyId() {
+  const me = useContext(MyContext)
+  const myData = useFragment(userIdFragment, me)
+  return myData?.id
 }
 
 export default function UserSelect({
@@ -51,6 +64,7 @@ export default function UserSelect({
   dateString,
 }) {
   const team = useContext(TeamContext)
+  const myId = useMyId()
 
   const selectedData = useFragment(
     graphql`
@@ -73,14 +87,8 @@ export default function UserSelect({
     `,
     selected,
   )
-  const excludedData = useFragment(
-    graphql`
-      fragment userSelectExcludedFragment on User {
-        id
-      }
-    `,
-    excluded,
-  )
+  const excludedData = useFragment(userIdFragment, excluded)
+
   const {users} =
     useFragment(
       graphql`
@@ -126,6 +134,7 @@ export default function UserSelect({
       <Select
         size={Select.Size.FULL}
         className={classNames(styles.select, {
+          [styles.me]: selectedData != null && selectedData.id === myId,
           [styles.error]: selectedItem?.disabled,
         })}
         label={label}
