@@ -1,5 +1,4 @@
 import {Fragment, Suspense} from 'react'
-import classNames from 'classnames'
 import {graphql, preloadQuery, usePreloadedQuery} from 'react-relay/hooks'
 import Loader from '@jetbrains/ring-ui/components/loader/loader'
 import {H1} from '@jetbrains/ring-ui/components/heading/heading'
@@ -9,8 +8,9 @@ import {MyContext, TeamContext} from '../utils/contexts'
 
 import RegularDuty from './regular-duty'
 import styles from './calendar.css'
-import Duty, {getDateString} from './duty'
+import Duty from './duty'
 import pipe from '../utils/pipe'
+import {getDateString, getMonth, getWeekday} from "../utils/date";
 
 const Query = graphql`
   query calendarQuery {
@@ -58,16 +58,6 @@ for (
     months[monthIndex].push(new Date(date))
   }
 }
-
-const getMonth = date =>
-  new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-  }).format(date)
-
-const getWeekday = date =>
-  new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-  }).format(date)
 
 function Calendar() {
   const {regularDuties, duties, team, me} = usePreloadedQuery(

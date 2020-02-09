@@ -1,9 +1,8 @@
-import path from 'path'
-
 import {buildSchema} from 'graphql'
 import graphqlHTTP from 'express-graphql'
-import {importSchema} from 'graphql-import'
 import axios from 'axios'
+
+import typeDefs from '../../main-schema/schema.graphql'
 
 import {
   fetchTeam,
@@ -16,7 +15,7 @@ import {
 } from '../../fauna'
 
 import '../../utils/server/slack'
-import {notifyResponsible} from '../../utils/server/slack'
+import {notifyAssignedResponsible} from '../../utils/server/slack'
 
 const Absence = ({available, description, since, till}) => ({
   available,
@@ -40,14 +39,10 @@ const User = ({id, name, smallAvatar, username, absences, emails}) => ({
       }
     }),
   absences: () => absences.map(Absence),
-  email: () =>
-    emails
-      .map(item => item.email)
-      .find(email => /^.*@jetbrains\.com$/.test(email)),
 })
 
 const userFields =
-  'id,name,smallAvatar,username,absences(available,description,since,till),emails'
+  'id,name,smallAvatar,username,absences(available,description,since,till)'
 
 async function DBUser({id, balance}, {fetch, log}) {
   const {data} = await fetch(
@@ -102,7 +97,7 @@ async function notifyResponsibleIfNeeded(
     }),
   )
 
-  notifyResponsible({
+  notifyAssignedResponsible({
     responsibleEmail,
     assignerEmail,
     isBackup: responsibleId == null,
@@ -113,10 +108,7 @@ async function notifyResponsibleIfNeeded(
 
 const graphqlMiddleware = ({fetch, url}) =>
   graphqlHTTP({
-    schema:
-      path.join(process.cwd(), 'main-schema/schema.graphql')
-      |> importSchema
-      |> buildSchema,
+    schema: buildSchema(typeDefs),
     graphiql: true,
     rootValue: {
       async me(_, {fetch}) {
@@ -167,21 +159,25 @@ const graphqlMiddleware = ({fetch, url}) =>
     context: {fetch, url},
   })
 
-export default (request, response) => {
-  const {space_token} = request.cookies
+export function createSpaceFetcher(token) {
   const spaceClient = axios.create({
     baseURL: `${process.env.SPACE_URL}/api/http/`,
     headers: {
-      Authorization: `Bearer ${space_token}`,
+      Authorization: `Bearer ${token}`,
     },
   })
   const cache = {}
-  const fetch = url => {
+  return url => {
     if (!(url in cache)) {
       cache[url] = spaceClient.get(url)
     }
     return cache[url]
   }
+}
+
+export default (request, response) => {
+  const {space_token} = request.cookies
+  const fetch = createSpaceFetcher(space_token)
   return graphqlMiddleware({fetch, url: request.headers.origin})(
     request,
     response,

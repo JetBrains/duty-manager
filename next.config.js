@@ -12,22 +12,27 @@ module.exports = {
       path.resolve(__dirname, 'components'),
       path.resolve(__dirname, 'pages'),
     )
-    baseConfig.module.rules.push(...config.module.rules)
-    baseConfig.externals = (baseConfig.externals || []).map(external =>
-      typeof external === 'function'
-        ? (context, request, callback) => {
-            if (
-              /(@jetbrains\/ring-ui\/components\/|react-virtualized)/.test(
-                request,
-              )
-            ) {
-              callback()
-            } else {
-              external(context, request, callback)
+    baseConfig.module.rules.push(...config.module.rules, {
+      test: /\.graphql$/,
+      loader: 'graphql-import-loader',
+    })
+    baseConfig.externals = (baseConfig.externals || [])
+      .map(external =>
+        typeof external === 'function'
+          ? (context, request, callback) => {
+              if (
+                /(@jetbrains\/ring-ui\/components\/|react-virtualized)/.test(
+                  request,
+                )
+              ) {
+                callback()
+              } else {
+                external(context, request, callback)
+              }
             }
-          }
-        : external,
-    )
+          : external,
+      )
+      .concat(['jsdom'])
     return baseConfig
   },
   target: 'serverless',

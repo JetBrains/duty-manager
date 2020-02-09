@@ -3,20 +3,20 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-console.log('INITIALIZING SLACK')
-const web = new WebClient(process.env.SLACK_TOKEN)
+const botAPI = new WebClient(process.env.SLACK_TOKEN)
+const userAPI = new WebClient(process.env.SLACK_USER_TOKEN)
 
 async function getSlackId(email) {
-  const {user} = await web.users.lookupByEmail({email})
+  const {user} = await botAPI.users.lookupByEmail({email})
   return user.id
 }
 
 async function sendMessage(email, text) {
   const channel = await getSlackId(email)
-  await web.chat.postMessage({channel, text})
+  await botAPI.chat.postMessage({channel, text})
 }
 
-export async function notifyResponsible({
+export async function notifyAssignedResponsible({
   responsibleEmail,
   assignerEmail,
   isBackup,
@@ -34,3 +34,31 @@ If you can't do it on that day, please find a replacement and reassign the duty:
   `,
   )
 }
+
+const channels = process.env.SLACK_CHANNELS.split(':')
+
+async function updateTopic(user) {
+  const id = user != null ? await getSlackId(user.email) : null
+  return userAPI.conversations.setTopic({
+    channel: channels[0],
+    topic: id != null ? `<@${id}> is on duty today` : '',
+  })
+}
+
+export const notifyCurrentResponsible = user =>
+  Promise.all([
+    user != null
+      ? sendMessage(
+          user.email,
+          `
+Hi ${
+            user.firstName
+          }, you're on frontend duty today. Please monitor following channels:
+
+${channels.map(channel => `<#${channel}>`).join(`
+`)}
+`,
+        )
+      : Promise.resolve(),
+    updateTopic(user),
+  ])

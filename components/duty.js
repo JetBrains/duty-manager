@@ -4,6 +4,7 @@ import {H2} from '@jetbrains/ring-ui/components/heading/heading'
 
 import UserSelect, {useMyId} from './user-select'
 import {regularDutyFragment} from './regular-duty'
+import {getDateString} from "../utils/date";
 
 const mutation = graphql`
   mutation dutySetResponsibleMutation($input: SetDutyInput!) {
@@ -58,8 +59,6 @@ export const createOptimisticUpdater = ({
     duties.setLinkedRecords(items.concat(newDuty), 'items')
   }
 }
-
-export const getDateString = date => date.toISOString().slice(0, 10)
 
 export default function Duty({date, duty, regularDuty, listId}) {
   const myId = useMyId()
