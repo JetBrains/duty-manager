@@ -7,6 +7,7 @@ import {getDateString, getWeekday} from '../../utils/date'
 
 import {createSpaceFetcher, DBUser} from './graphql'
 import {notifyCurrentResponsible} from "../../utils/server/slack";
+import {getEmails} from "../../utils/server/fetchEmails";
 
 dotenv.config()
 
@@ -14,7 +15,7 @@ async function getCurrentResponsible() {
   const regularDutiesPromise = fetchRegularDuties()
   const duties = await fetchDuties()
   const today = new Date()
-  // today.setDate(6)
+  // today.setDate(13)
   const currentDate = getDateString(today)
   const currentWeekday = getWeekday(today)
   const duty =
@@ -51,9 +52,7 @@ async function getAndNotifyCurrentResponsible() {
       `team-directory/profiles/${responsible.id}?$fields=name,emails`,
     )
     user = {
-      email: data.emails
-        .map(item => item.email)
-        .find(email => /^.*@jetbrains\.com$/.test(email)),
+      emails: getEmails(data),
       firstName: data.name.firstName,
     }
   }

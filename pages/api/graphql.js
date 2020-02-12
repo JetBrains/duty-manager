@@ -17,6 +17,7 @@ import {
 import '../../utils/server/slack'
 import {notifyAssignedResponsible} from '../../utils/server/slack'
 import {getDateString} from '../../utils/date'
+import {fetchEmails} from '../../utils/server/fetchEmails'
 
 const Absence = ({available, description, since, till}) => ({
   available,
@@ -112,16 +113,15 @@ async function notifyResponsibleIfNeeded(
     return
   }
 
-  const [responsibleEmail, assignerEmail] = await Promise.all(
-    [responsibleOrBackupId, assignerId].map(async id => {
-      const user = await DBUser({id}, context)
-      return user.email()
-    }),
+  const [responsibleEmails, assignerEmails] = await Promise.all(
+    [responsibleOrBackupId, assignerId].map(async id =>
+      fetchEmails(id, context.fetch),
+    ),
   )
 
   notifyAssignedResponsible({
-    responsibleEmail,
-    assignerEmail,
+    responsibleEmails,
+    assignerEmails,
     isBackup: responsibleId == null,
     date,
     url: context.url,
