@@ -19,7 +19,7 @@ async function getSlackId(emails) {
 }
 
 async function sendMessage(emails, text) {
-  const channel = await getSlackId(email)
+  const channel = await getSlackId(emails)
   await botAPI.chat.postMessage({channel, text})
 }
 
