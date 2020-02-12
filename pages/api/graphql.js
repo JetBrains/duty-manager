@@ -16,6 +16,7 @@ import {
 
 import '../../utils/server/slack'
 import {notifyAssignedResponsible} from '../../utils/server/slack'
+import {getDateString} from '../../utils/date'
 
 const Absence = ({available, description, since, till}) => ({
   available,
@@ -24,7 +25,25 @@ const Absence = ({available, description, since, till}) => ({
   till: till.iso,
 })
 
-const User = ({id, name, smallAvatar, username, absences, emails}) => ({
+const HolidayAbsence = ({date, name, workingDay}) => ({
+  available: workingDay,
+  reason: name,
+  since: date.iso,
+  till: date.iso,
+})
+
+async function getHolidays(locationId, {fetch, today}) {
+  const endDate = new Date(today)
+  endDate.setMonth(today.getMonth() + 2)
+  const {data} = await fetch(
+    `public-holidays/holidays?location=${locationId}&startDate=${getDateString(
+      today,
+    )}&endDate=${getDateString(endDate)}&$fields=data(date,name,workingDay)`,
+  )
+  return data.data
+}
+
+const User = ({id, name, smallAvatar, username, absences, locations}) => ({
   id,
   username,
   name: () => `${name.firstName} ${name.lastName}`,
@@ -38,11 +57,14 @@ const User = ({id, name, smallAvatar, username, absences, emails}) => ({
         },
       }
     }),
-  absences: () => absences.map(Absence),
+  async absences(_, context) {
+    const holidays = await getHolidays(locations[0].location.id, context)
+    return [...absences.map(Absence), ...holidays.map(HolidayAbsence)]
+  },
 })
 
 const userFields =
-  'id,name,smallAvatar,username,absences(available,description,since,till)'
+  'id,name,smallAvatar,username,absences(available,description,since,till),locations(location(id))'
 
 async function DBUser({id, balance}, {fetch, log}) {
   const {data} = await fetch(
@@ -156,7 +178,7 @@ const graphqlMiddleware = ({fetch, url}) =>
         return {duties: () => Duties(duties), team: () => Team(team, context)}
       },
     },
-    context: {fetch, url},
+    context: {fetch, url, today: new Date()},
   })
 
 export function createSpaceFetcher(token) {
@@ -166,6 +188,13 @@ export function createSpaceFetcher(token) {
       Authorization: `Bearer ${token}`,
     },
   })
+  spaceClient.interceptors.response.use(
+    response => response,
+    error => {
+      console.log(error)
+      throw error
+    },
+  )
   const cache = {}
   return url => {
     if (!(url in cache)) {
