@@ -7,6 +7,7 @@ import {getDateString, getWeekday} from '../../utils/date'
 
 import {createSpaceFetcher, DBUser} from './graphql'
 import {notifyCurrentResponsibles} from '../../utils/server/slack'
+import {getEmails} from "../../utils/server/getEmails";
 
 dotenv.config()
 
@@ -46,17 +47,10 @@ async function getAndNotifyCurrentResponsible() {
     initSpaceAPI(),
   ])
 
-  const emails = await Promise.all(
-    responsibles.map(async responsible => {
-      const {data} = await fetch(
-        `team-directory/profiles/${responsible.id}?$fields=emails`,
-      )
-      return data.emails
-        .map(item => item.email)
-        .find(email => /^.*@jetbrains\.com$/.test(email))
-    }),
+  const emailArrays = await Promise.all(
+    responsibles.map(async responsible => getEmails(responsible.id, fetch)),
   )
-  return notifyCurrentResponsibles(emails)
+  return notifyCurrentResponsibles(emailArrays)
 }
 
 export default async (_, response) => {
