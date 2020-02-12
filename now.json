@@ -2,10 +2,10 @@
   "env": {
     "SPACE_BOT_ID": "@space-bot-id",
     "SPACE_BOT_SECRET": "@space-bot-secret",
-    "FAUNA_SECRET": "@fauna-secret",
+    "FAUNA_SECRET": "@fauna-secret-buildserver",
     "SLACK_TOKEN": "@slack-token",
     "SLACK_USER_TOKEN": "@slack-user-token",
-    "SLACK_CHANNELS": "@slack-channels"
+    "SLACK_CHANNEL": "@slack-channel"
   },
   "build": {
     "env": {

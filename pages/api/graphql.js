@@ -56,7 +56,7 @@ async function DBUser({id, balance}, {fetch, log}) {
 
 const Team = (users, context) => ({
   id: 'team',
-  users: () => users.map(user => DBUser(user, context)),
+  users: users != null ? () => users.map(user => DBUser(user, context)) : [],
 })
 
 const RegularDuty = ({weekday, responsible, backup}) => ({

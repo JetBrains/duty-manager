@@ -35,30 +35,16 @@ If you can't do it on that day, please find a replacement and reassign the duty:
   )
 }
 
-const channels = process.env.SLACK_CHANNELS.split(':')
-
-async function updateTopic(user) {
-  const id = user != null ? await getSlackId(user.email) : null
+export async function notifyCurrentResponsibles(emails) {
+  const ids = await Promise.all(emails.map(getSlackId))
   return userAPI.conversations.setTopic({
-    channel: channels[0],
-    topic: id != null ? `<@${id}> is on duty today` : '',
+    channel: process.env.SLACK_CHANNEL,
+    topic: `For https://buildserver.labs.intellij.net issues${
+      ids.length > 0
+        ? `. ${ids.map(id => `<@${id}>`).join(' and ')} ${
+            ids.length > 1 ? 'are' : 'is'
+          } on duty today`
+        : ''
+    }`,
   })
 }
-
-export const notifyCurrentResponsible = user =>
-  Promise.all([
-    user != null
-      ? sendMessage(
-          user.email,
-          `
-Hi ${
-            user.firstName
-          }, you're on frontend duty today. Please monitor following channels:
-
-${channels.map(channel => `<#${channel}>`).join(`
-`)}
-`,
-        )
-      : Promise.resolve(),
-    updateTopic(user),
-  ])

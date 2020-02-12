@@ -6,21 +6,21 @@ import {fetchDuties, fetchRegularDuties} from '../../fauna'
 import {getDateString, getWeekday} from '../../utils/date'
 
 import {createSpaceFetcher, DBUser} from './graphql'
-import {notifyCurrentResponsible} from "../../utils/server/slack";
+import {notifyCurrentResponsibles} from '../../utils/server/slack'
 
 dotenv.config()
 
-async function getCurrentResponsible() {
+async function getCurrentResponsibles() {
   const regularDutiesPromise = fetchRegularDuties()
   const duties = await fetchDuties()
   const today = new Date()
-  // today.setDate(6)
+  // today.setDate(9)
   const currentDate = getDateString(today)
   const currentWeekday = getWeekday(today)
   const duty =
     duties.find(({date}) => date === currentDate) ??
     (await regularDutiesPromise).find(({weekday}) => weekday === currentWeekday)
-  return duty?.responsible
+  return duty != null ? [duty.responsible, duty.backup].filter(Boolean) : []
 }
 
 async function initSpaceAPI() {
@@ -41,23 +41,22 @@ async function initSpaceAPI() {
 }
 
 async function getAndNotifyCurrentResponsible() {
-  const [responsible, fetch] = await Promise.all([
-    getCurrentResponsible(),
+  const [responsibles, fetch] = await Promise.all([
+    getCurrentResponsibles(),
     initSpaceAPI(),
   ])
-  let user = null
-  if (responsible != null) {
-    const {data} = await fetch(
-      `team-directory/profiles/${responsible.id}?$fields=name,emails`,
-    )
-    user = {
-      email: data.emails
+
+  const emails = await Promise.all(
+    responsibles.map(async responsible => {
+      const {data} = await fetch(
+        `team-directory/profiles/${responsible.id}?$fields=emails`,
+      )
+      return data.emails
         .map(item => item.email)
-        .find(email => /^.*@jetbrains\.com$/.test(email)),
-      firstName: data.name.firstName,
-    }
-  }
-  return notifyCurrentResponsible(user)
+        .find(email => /^.*@jetbrains\.com$/.test(email))
+    }),
+  )
+  return notifyCurrentResponsibles(emails)
 }
 
 export default async (_, response) => {

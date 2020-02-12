@@ -26,7 +26,7 @@ const gql = ([query]) => query
 
 export const fetchTeam = () =>
   fetchQuery(
-    data => data.dutyTeam.users.data,
+    data => data.dutyTeam?.users.data,
     gql`
       query {
         dutyTeam {
@@ -87,7 +87,7 @@ export const fetchDuties = () =>
 
 const getTeamId = () =>
   fetchQuery(
-    data => data.dutyTeam._id,
+    data => data.dutyTeam?._id,
     gql`
       query {
         dutyTeam {

@@ -64,7 +64,7 @@ type Duties {
 type Query {
     me: User
     search(query: String): [User!]!
-    team: Team
+    team: Team!
     regularDuties: RegularDuties
     duties: Duties
 }
