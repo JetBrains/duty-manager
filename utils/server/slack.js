@@ -44,11 +44,11 @@ If you can't do it on that day, please find a replacement and reassign the duty:
 
 const channels = process.env.SLACK_CHANNELS.split(':')
 
-async function updateTopic(user) {
+async function updatePurpose(user) {
   const id = user != null ? await getSlackId(user.emails) : null
-  return userAPI.conversations.setTopic({
+  return userAPI.conversations.setPurpose({
     channel: channels[0],
-    topic: id != null ? `<@${id}> is on duty today` : '',
+    purpose: id != null ? `<@${id}> is on duty today` : '',
   })
 }
 
@@ -67,5 +67,5 @@ ${channels.map(channel => `<#${channel}>`).join(`
 `,
         )
       : Promise.resolve(),
-    updateTopic(user),
+    updatePurpose(user),
   ])
