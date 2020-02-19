@@ -6,8 +6,8 @@ import {fetchDuties, fetchRegularDuties} from '../../fauna'
 import {getDateString, getWeekday} from '../../utils/date'
 
 import {createSpaceFetcher, DBUser} from './graphql'
-import {notifyCurrentResponsible} from "../../utils/server/slack";
-import {getEmails} from "../../utils/server/fetchEmails";
+import {notifyCurrentResponsible} from '../../utils/server/slack'
+import {getEmails} from '../../utils/server/fetchEmails'
 
 dotenv.config()
 

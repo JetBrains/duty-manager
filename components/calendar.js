@@ -10,7 +10,7 @@ import RegularDuty from './regular-duty'
 import styles from './calendar.css'
 import Duty from './duty'
 import pipe from '../utils/pipe'
-import {getDateString, getMonth, getWeekday} from "../utils/date";
+import {getDateString, getMonth, getWeekday} from '../utils/date'
 
 const Query = graphql`
   query calendarQuery {

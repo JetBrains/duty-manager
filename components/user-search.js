@@ -8,7 +8,7 @@ import RelayEnvironment from '../utils/relay-environment'
 
 import styles from './user-search.css'
 import SUSPENSE_CONFIG from '../utils/suspense-config'
-import {createItem} from "./user-select";
+import {createItem} from './user-select'
 
 const Query = graphql`
   query userSearchQuery($query: String!) {

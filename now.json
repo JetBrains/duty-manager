@@ -5,7 +5,8 @@
     "FAUNA_SECRET": "@fauna-secret",
     "SLACK_TOKEN": "@slack-token",
     "SLACK_USER_TOKEN": "@slack-user-token",
-    "SLACK_CHANNELS": "@slack-channels"
+    "SLACK_CHANNELS": "@slack-channels",
+    "SLACK_USERGROUP": "@slack-usergroup"
   },
   "build": {
     "env": {

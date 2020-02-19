@@ -4,7 +4,6 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const botAPI = new WebClient(process.env.SLACK_TOKEN)
-const userAPI = new WebClient(process.env.SLACK_USER_TOKEN)
 
 async function getSlackId(emails) {
   let user
@@ -44,18 +43,18 @@ If you can't do it on that day, please find a replacement and reassign the duty:
 
 const channels = process.env.SLACK_CHANNELS.split(':')
 
-async function updatePurpose(user) {
-  const id = user != null ? await getSlackId(user.emails) : null
-  return userAPI.conversations.setPurpose({
-    channel: channels[0],
-    purpose: id != null ? `<@${id}> is on duty today` : '',
+async function updateUserGroup(user) {
+  const id = await getSlackId(user.emails)
+  return botAPI.usergroups.users.update({
+    usergroup: process.env.SLACK_USERGROUP,
+    users: id,
   })
 }
 
 export const notifyCurrentResponsible = user =>
-  Promise.all([
-    user != null
-      ? sendMessage(
+  user != null
+    ? Promise.all([
+        sendMessage(
           user.emails,
           `
 Hi ${
@@ -65,7 +64,7 @@ Hi ${
 ${channels.map(channel => `<#${channel}>`).join(`
 `)}
 `,
-        )
-      : Promise.resolve(),
-    updatePurpose(user),
-  ])
+        ),
+        updateUserGroup(user),
+      ])
+    : Promise.resolve()

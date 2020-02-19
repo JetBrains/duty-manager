@@ -118,7 +118,7 @@ function Team(props) {
         ))}
       </ul>
       <UserSearch
-        users={team.users}A
+        users={team.users}
         onSelect={({user}) => {
           console.log('SELECT:', user.name, team.users)
           commitAddMemberMutation(user, team)
