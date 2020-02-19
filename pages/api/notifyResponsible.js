@@ -7,7 +7,7 @@ import {getDateString, getWeekday} from '../../utils/date'
 
 import {createSpaceFetcher, DBUser} from './graphql'
 import {notifyCurrentResponsibles} from '../../utils/server/slack'
-import {getEmails} from "../../utils/server/getEmails";
+import {getEmails} from '../../utils/server/getEmails'
 
 dotenv.config()
 
