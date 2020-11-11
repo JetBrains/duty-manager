@@ -12,8 +12,8 @@ export default async function fetchGraphQL(query, variables) {
   const {data} = await axios.post('api/graphql', {query, variables})
   if (data.errors != null) {
     if (
-      data.errors.some(
-        error => error.message === 'Request failed with status code 401',
+      data.errors.some(error =>
+        /Request failed with status code 40[13]/.test(error.message),
       )
     ) {
       authenticate()
