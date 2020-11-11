@@ -5,7 +5,7 @@ dotenv.config()
 
 const botAPI = new WebClient(process.env.SLACK_TOKEN)
 
-async function getSlackId(emails) {
+export async function getSlackId(emails) {
   let user
   for (const email of emails) {
     try {

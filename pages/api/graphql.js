@@ -1,23 +1,26 @@
 import {buildSchema} from 'graphql'
 import graphqlHTTP from 'express-graphql'
-import axios from 'axios'
+import dotenv from 'dotenv'
 
 import typeDefs from '../../main-schema/schema.graphql'
 
 import {
-  fetchTeam,
-  fetchRegularDuties,
-  fetchDuties,
   addTeamMember,
+  fetchDuties,
+  fetchRegularDuties,
+  fetchTeam,
   removeTeamMember,
-  setRegularDuty,
   setDuty,
+  setRegularDuty,
 } from '../../fauna'
 
 import '../../utils/server/slack'
 import {notifyAssignedResponsible} from '../../utils/server/slack'
 import {getDateString} from '../../utils/date'
 import {fetchEmails} from '../../utils/server/fetchEmails'
+import {createSpaceFetcher} from '../../utils/server/space'
+
+dotenv.config()
 
 const Absence = ({available, description, since, till}) => ({
   available,
@@ -180,29 +183,6 @@ const graphqlMiddleware = ({fetch, url}) =>
     },
     context: {fetch, url, today: new Date()},
   })
-
-export function createSpaceFetcher(token) {
-  const spaceClient = axios.create({
-    baseURL: `${process.env.SPACE_URL}/api/http/`,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  spaceClient.interceptors.response.use(
-    response => response,
-    error => {
-      console.log(error)
-      throw error
-    },
-  )
-  const cache = {}
-  return url => {
-    if (!(url in cache)) {
-      cache[url] = spaceClient.get(url)
-    }
-    return cache[url]
-  }
-}
 
 export default (request, response) => {
   const {space_token} = request.cookies
