@@ -68,7 +68,7 @@ export const fetchDuties = () =>
     data => data.duties.data,
     gql`
       query {
-        duties {
+        duties(_size: 1000) {
           data {
             date
             responsible {
