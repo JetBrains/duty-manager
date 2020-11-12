@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash fedf177a604e97a501212856abc352c7
+ * @relayHash 87c752fc2b7f6eb71dc1a9d0bfa5ef81
  */
 
 /* eslint-disable */
@@ -11,7 +11,7 @@
 import type { ConcreteRequest } from 'relay-runtime';
 export type teamQueryVariables = {||};
 export type teamQueryResponse = {|
-  +team: ?{|
+  +team: {|
     +id: string,
     +users: $ReadOnlyArray<{|
       +id: string,

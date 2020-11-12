@@ -1,4 +1,4 @@
-const SCOPE = 'Profile:ViewAbsences'
+const SCOPE = 'Profile:ViewAbsences Profile:ViewProfile'
 
 export default function authenticate(force = false) {
   if (force) {

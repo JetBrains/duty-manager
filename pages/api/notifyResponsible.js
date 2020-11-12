@@ -29,6 +29,7 @@ async function initSpaceAPI() {
     `${process.env.SPACE_URL}/oauth/token`,
     querystring.stringify({
       grant_type: 'client_credentials',
+      scope: 'Profile:ViewProfile',
     }),
     {
       auth: {
@@ -50,6 +51,7 @@ async function getAndNotifyCurrentResponsible() {
   const emailArrays = await Promise.all(
     responsibles.map(async responsible => getEmails(responsible.id, fetch)),
   )
+  // console.log(responsibles, emailArrays)
   return notifyCurrentResponsibles(emailArrays)
 }
 

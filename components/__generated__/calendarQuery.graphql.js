@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash e77bad1a6b9efc91ddc4bb1f837e3318
+ * @relayHash 75ddee44d77a9c930aacf5cca77f5197
  */
 
 /* eslint-disable */
@@ -30,7 +30,7 @@ export type calendarQueryResponse = {|
       +$fragmentRefs: dutyFragment$ref,
     |}>,
   |},
-  +team: ?{|
+  +team: {|
     +$fragmentRefs: userSelectTeamFragment$ref
   |},
   +me: ?{|
