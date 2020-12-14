@@ -313,7 +313,7 @@ export async function setDuty({
     ({duties, dutyTeam}) => ({duties: duties.data, team: dutyTeam.users.data}),
     gql`
       query {
-        duties {
+        duties(_size: 1000) {
           data {
             date
             responsible {
