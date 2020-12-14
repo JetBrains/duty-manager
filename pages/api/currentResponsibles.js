@@ -7,7 +7,7 @@ import {initSpaceBotAPI} from '../../utils/server/space'
 async function getCurrentResponsibles() {
   const [duty, fetch] = await Promise.all([getCurrentDuty(), initSpaceBotAPI()])
   return Promise.all(
-    [duty.responsible, duty.backup].map(async user => {
+    [duty.responsible, duty.backup].filter(Boolean).map(async user => {
       const emails = await fetchEmails(user.id, fetch)
       return getSlackId(emails)
     }),

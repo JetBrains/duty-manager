@@ -7,7 +7,7 @@ export async function getCurrentDuty() {
     fetchDuties(),
   ])
   const today = new Date()
-  // today.setDate(4)
+  // today.setDate(12)
   const currentDate = getDateString(today)
   const currentWeekday = getWeekday(today)
   const currentDuty = duties.find(({date}) => date === currentDate)
@@ -15,8 +15,8 @@ export async function getCurrentDuty() {
     ({weekday}) => weekday === currentWeekday,
   )
   return {
-    responsible: currentDuty?.responsible ?? currentRegularDuty.responsible,
-    backup: currentDuty?.backup ?? currentRegularDuty.backup,
+    responsible: currentDuty?.responsible ?? currentRegularDuty?.responsible,
+    backup: currentDuty?.backup ?? currentRegularDuty?.backup,
   }
 }
 
