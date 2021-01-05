@@ -15,7 +15,7 @@
     "@jetbrains/ring-ui": "^2.1.16",
     "@slack/web-api": "^5.7.0",
     "@zeit/next-css": "^1.0.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-plugin-relay": "^8.0.0",
     "classnames": "^2.2.6",
     "core-js": "^2.6.11",
