@@ -26,7 +26,7 @@
     "graphql-import": "^0.7.1",
     "graphql-import-loader": "^0.2.1",
     "graphql-relay": "^0.6.0",
-    "jsdom": "^16.0.0",
+    "jsdom": "^16.5.0",
     "mini-css-extract-plugin": "^0.9.0",
     "next": "9.3.2",
     "react": "^0.0.0-experimental-f42431abe",
